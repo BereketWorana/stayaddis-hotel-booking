@@ -5,6 +5,7 @@ import '../config/api_config.dart';
 import '../config/app_theme.dart';
 import 'hotel_detail_screen.dart';
 import 'login_screen.dart';
+import 'admin_login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -71,14 +72,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
-                            IconButton(
+                                                        PopupMenuButton<String>(
                               icon: const Icon(Icons.account_circle, color: AppColors.textOnPrimary, size: 28),
-                              onPressed: () async {
-                                final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                                );
+                              color: AppColors.surface,
+                              onSelected: (value) {
+                                if (value == 'user') {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+                                } else {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminLoginScreen()));
+                                }
                               },
+                              itemBuilder: (_) => const [
+                                PopupMenuItem(value: 'user', child: ListTile(leading: Icon(Icons.person), title: Text('User Login'))),
+                                PopupMenuItem(value: 'admin', child: ListTile(leading: Icon(Icons.admin_panel_settings), title: Text('Admin Login'))),
+                              ],
                             ),
                           ],
                         ),

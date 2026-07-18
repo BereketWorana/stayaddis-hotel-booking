@@ -77,4 +77,45 @@ class Auth extends BaseController
             'data'    => $user,
         ]);
     }
+
+    public function adminLogin()
+    {
+        $rules = [
+            'email'    => 'required|valid_email',
+            'password' => 'required',
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'status'  => 'error',
+                'message' => 'Validation failed',
+            ]);
+        }
+
+        $data = $this->request->getPost();
+        $userModel = new UserModel();
+        $user = $userModel->where('email', $data['email'])->first();
+
+        if (!$user || !password_verify($data['password'], $user['password_hash'])) {
+            return $this->response->setStatusCode(401)->setJSON([
+                'status'  => 'error',
+                'message' => 'Invalid credentials',
+            ]);
+        }
+
+        if ($user['role'] !== 'admin') {
+            return $this->response->setStatusCode(403)->setJSON([
+                'status'  => 'error',
+                'message' => 'Access denied. Admin only.',
+            ]);
+        }
+
+        unset($user['password_hash']);
+
+        return $this->response->setJSON([
+            'status'  => 'success',
+            'message' => 'Admin login successful',
+            'data'    => $user,
+        ]);
+    }
 }
