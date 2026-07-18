@@ -2,29 +2,15 @@
 
 namespace App\Controllers;
 
-use Codeigniter\Controller;
+use App\Models\HotelModel;
 
-class DbTest extends BaseController
+class Home extends BaseController
 {
     public function index()
     {
-        $db = \Config\Database::connect();
+        $hotelModel = new HotelModel();
+        $hotels = $hotelModel->findAll();
 
-        if($db->connect())
-        {
-            echo"✅ Database connected successfullt!";
-        
-
-        //test query
-        $query = $db->query("SELECT * FROM hotels");
-        $hotels = $query->getResult();
-
-        echo"<pre>";
-        print_r($hotels);
-        echo"<prev>";
-        } else {
-            echo"❌ Database connection failed!";
-        }
-
+        return view('home', ['hotels' => $hotels]);
     }
 }
