@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../config/api_config.dart';
 import '../config/app_theme.dart';
 import 'register_screen.dart';
+import 'my_bookings_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -34,8 +35,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      Navigator.pop(context, data['data']);
-    } else {
+        Navigator.pushReplacement(
+        context,
+         MaterialPageRoute(
+         builder: (_) => MyBookingsScreen(user: data['data']),
+             ),
+         );    } else {
       final error = json.decode(response.body);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error['message'] ?? 'Login failed')),

@@ -26,3 +26,4 @@ $routes->put('/api/admin/hotels/(:num)', 'Api\Admin::updateHotel/$1');
 $routes->delete('/api/admin/hotels/(:num)', 'Api\Admin::deleteHotel/$1');
 $routes->get('/api/admin/bookings', 'Api\Admin::bookings');
 $routes->put('/api/admin/bookings/(:num)/status', 'Api\Admin::updateBookingStatus/$1');
+$routes->get('/api/my-bookings', 'Api\MyBookings::index');
