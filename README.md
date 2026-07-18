@@ -209,14 +209,12 @@ Contributions welcome! For major changes:
 4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details
 
 ## 👤 Author
 
 **Bereket Worana**  
-📧 [Your Email]  
+📧 [My Email](bereketworana@gmail.com)  
 🔗 [GitHub Profile](https://github.com/BereketWorana)
 
 ---
