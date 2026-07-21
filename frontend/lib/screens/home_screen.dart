@@ -17,6 +17,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> hotels = [];
   bool isLoading = true;
+  final _searchController = TextEditingController();
+  String _query = '';
+  List<dynamic> get _filteredHotels {
+    if (_query.isEmpty) return hotels;
+    return hotels.where((h) => h['name'].toString().toLowerCase().contains(_query.toLowerCase())).toList();
+  }
 
   @override
   void initState() {
@@ -25,9 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchHotels() async {
-    final response = await http.get(
-      Uri.parse(ApiConfig.hotelsEndpoint),
-    );
+    final response = await http.get(Uri.parse(ApiConfig.hotelsEndpoint));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -39,11 +43,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-                    SliverAppBar(
+          SliverAppBar(
             expandedHeight: 240,
             floating: false,
             pinned: true,
@@ -62,17 +72,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                                                Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'StayAddis',
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    color: AppColors.textOnPrimary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                                                        PopupMenuButton<String>(
+                            Text('StayAddis',
+                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: AppColors.textOnPrimary, fontWeight: FontWeight.bold)),
+                            PopupMenuButton<String>(
                               icon: const Icon(Icons.account_circle, color: AppColors.textOnPrimary, size: 28),
                               color: AppColors.surface,
                               onSelected: (value) {
@@ -90,12 +96,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          'Find your perfect stay in Addis Ababa',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Colors.white70,
-                              ),
-                        ),
+                        Text('Find your perfect stay in Addis Ababa',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white70)),
                         const SizedBox(height: AppSpacing.md),
                         Container(
                           height: 48,
@@ -103,16 +105,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.white.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(AppSpacing.sm),
                           ),
-                          child: const Row(
-                            children: [
-                              SizedBox(width: AppSpacing.md),
-                              Icon(Icons.search, color: Colors.white60, size: 20),
-                              SizedBox(width: AppSpacing.sm),
-                              Text(
-                                'Search hotels...',
-                                style: TextStyle(color: Colors.white38, fontSize: 15),
-                              ),
-                            ],
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) => setState(() => _query = value),
+                            style: const TextStyle(color: Colors.white, fontSize: 15),
+                            decoration: const InputDecoration(
+                              hintText: 'Search hotels...',
+                              hintStyle: TextStyle(color: Colors.white38, fontSize: 15),
+                              suffixIcon: Icon(Icons.search, color: Colors.white60, size: 20),                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(vertical: 12),
+                            ),
                           ),
                         ),
                       ],
@@ -124,57 +126,32 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md,
-                AppSpacing.lg,
-                AppSpacing.md,
-                AppSpacing.sm,
-              ),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.sm),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Discover Addis Ababa',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                  ),
-                  Text(
-                    '${hotels.length} hotels',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                  ),
+                  Text('Discover Addis Ababa',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  Text('${_filteredHotels.length} hotels',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
                 ],
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
           isLoading
               ? const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(AppSpacing.xl),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                )
+                  child: Center(child: Padding(padding: EdgeInsets.all(AppSpacing.xl), child: CircularProgressIndicator())))
               : SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) => _buildHotelCard(hotels[index]),
-                      childCount: hotels.length,
+                      (context, index) => _buildHotelCard(_filteredHotels[index]),
+                      childCount: _filteredHotels.length,
                     ),
                   ),
                 ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: AppSpacing.md),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
         ],
       ),
     );
@@ -182,25 +159,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHotelCard(dynamic hotel) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HotelDetailScreen(hotel: hotel),
-          ),
-        );
-      },
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HotelDetailScreen(hotel: hotel))),
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.md),
         height: 260,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppSpacing.md),
           boxShadow: [
-            BoxShadow(
-              color: AppColors.textPrimary.withValues(alpha: 0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
+            BoxShadow(color: AppColors.textPrimary.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, 6)),
           ],
         ),
         child: ClipRRect(
@@ -208,25 +174,15 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.network(
-                ApiConfig.imageUrl(hotel['cover_image']),
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.hotel, size: 48, color: Colors.grey),
-                ),
-              ),
-              // Simple gradient for text readability — no colored badge overlay
+              Image.network(ApiConfig.imageUrl(hotel['cover_image']),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(color: Colors.grey[200], child: const Icon(Icons.hotel, size: 48, color: Colors.grey))),
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      AppColors.textPrimary.withValues(alpha: 0.7),
-                    ],
-                  ),
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, AppColors.textPrimary.withValues(alpha: 0.7)]),
                 ),
               ),
               Positioned(
@@ -237,46 +193,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      hotel['name'],
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: AppColors.textOnPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
+                    Text(hotel['name'],
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textOnPrimary, fontWeight: FontWeight.bold)),
                     const SizedBox(height: AppSpacing.xs),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          size: 16,
-                          color: Colors.amber,
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          '${hotel['star_rating']}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.textOnPrimary,
-                              ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        const Icon(
-                          Icons.location_on,
-                          size: 14,
-                          color: Colors.white70,
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Expanded(
-                          child: Text(
-                            hotel['address'],
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white70,
-                                ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
+                    Row(children: [
+                      const Icon(Icons.star, size: 16, color: Colors.amber),
+                      const SizedBox(width: AppSpacing.xs),
+                      Text('${hotel['star_rating']}',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textOnPrimary)),
+                      const SizedBox(width: AppSpacing.sm),
+                      const Icon(Icons.location_on, size: 14, color: Colors.white70),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(
+                          child: Text(hotel['address'],
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70),
+                              overflow: TextOverflow.ellipsis)),
+                    ]),
                   ],
                 ),
               ),
