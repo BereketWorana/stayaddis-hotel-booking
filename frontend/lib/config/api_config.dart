@@ -11,5 +11,6 @@ class ApiConfig {
   static String hotelDetailEndpoint(dynamic id) =>
       '$baseUrl/api/hotels/$id';
 
-  static String imageUrl(String path) => '$assetsBaseUrl/$path';
+  static String imageUrl(String path) => 
+      '$assetsBaseUrl/$path';
 }

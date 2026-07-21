@@ -41,7 +41,8 @@ class Admin extends BaseController
     public function addHotel()
     {
         $hotelModel = new HotelModel();
-        $data = $this->request->getPost();        $id = $hotelModel->insert($data);
+        $data = $this->request->getPost();        
+        $id = $hotelModel->insert($data);
         return $this->response->setJSON([
             'status' => 'success',
             'data'   => $hotelModel->find($id),

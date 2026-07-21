@@ -4,8 +4,6 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
-$routes->get('/dbtest', 'DbTest::index');
-// Web routes
 $routes->get('/', 'Home::index');
 $routes->get('/hotel/(:num)', 'Home::hotelDetail/$1');
 

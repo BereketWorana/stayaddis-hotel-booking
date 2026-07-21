@@ -191,7 +191,7 @@ Text('Payment Method',
         fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
 SizedBox(height: AppSpacing.sm),
 DropdownButtonFormField<String>(
-  value: _paymentMethod,
+  initialValue: _paymentMethod,
   decoration: const InputDecoration(
     border: OutlineInputBorder(),
     prefixIcon: Icon(Icons.payment),
