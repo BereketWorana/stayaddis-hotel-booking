@@ -3,7 +3,6 @@
 A full-stack hotel booking application for Addis Ababa, built with **CodeIgniter 4** (backend API) and **Flutter** (mobile frontend). Browse hotels, explore rooms, and make instant bookings with multiple payment methods.
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-blue)
 ![Platform](https://img.shields.io/badge/platform-Flutter%20%7C%20PHP-orange)
 
 ## ✨ Features
