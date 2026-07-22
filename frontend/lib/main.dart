@@ -15,7 +15,7 @@ class StayAddisApp extends StatelessWidget {
       title: 'StayAddis',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }

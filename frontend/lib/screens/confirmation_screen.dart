@@ -27,7 +27,17 @@ class ConfirmationScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.check_circle, size: 80, color: Colors.green),
+              TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: 1),
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.elasticOut,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: const Icon(Icons.check_circle, size: 80, color: Colors.green),
+                );
+              },
+            ),
               SizedBox(height: AppSpacing.lg),
               Text('Booking Confirmed!',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(

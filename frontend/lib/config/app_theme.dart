@@ -28,6 +28,13 @@ class AppTheme {
       useMaterial3: true,
       textTheme: GoogleFonts.poppinsTextTheme(),
       scaffoldBackgroundColor: AppColors.surface,
+      splashFactory: InkRipple.splashFactory,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          animationDuration: const Duration(milliseconds: 150),
+          enableFeedback: true,
+        ),
+      ),
     );
   }
 }
